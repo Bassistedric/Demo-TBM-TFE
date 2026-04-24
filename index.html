@@ -1,55 +1,29 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#111827" />
-  <title>QHSE – Apps</title>
-
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="apple-touch-icon" href="icon-192.png">
-  <link rel="icon" href="qhse-logo.svg" type="image/svg+xml">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="mobile-web-app-capable" content="yes">
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Démo TBM - TFE</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    @media print{header,footer,.no-print{display:none!important}main{max-width:100%!important}section{page-break-inside:avoid}}
-  </style>
 </head>
+<body class="min-h-screen bg-gray-50 text-slate-900">
+  <main class="max-w-md mx-auto px-4 py-6 space-y-4">
+    <section class="bg-white rounded-2xl shadow p-5 space-y-4">
+      <h1 class="text-2xl font-bold px-4 py-3 rounded-xl bg-[#104861] text-[#D9D9D9] text-center">Démo TBM - TFE</h1>
 
-<body class="min-h-screen bg-gray-50">
-  <div id="root"></div>
+      <p class="text-sm text-slate-700 leading-6">
+        Cette version de démonstration permet de tester le module TBM avec des données fictives.
+        Aucun nom réel, chantier réel ou enregistrement opérationnel n’est utilisé.
+      </p>
 
-  <!-- ✅ Config AVANT le bundle -->
-  <script>
-    window.QHSE_CONFIG = {
-      COLLECT_URL: "https://script.google.com/macros/s/AKfycbwLRqxxGrcsW73R-iMHDbbKFchA2V6Xw5uUZmuo1qVW_DBW8KerO3GD2FRge7xPo-hbjw/exec"
-    };
+      <div class="rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900 leading-5">
+        Version académique anonymisée. Aucune donnée n’est transmise vers Google Sheet ou vers une base externe.
+      </div>
 
-    // STOP principal = page dédiée stop.html
-    // (évite d'avoir 2 implémentations STOP à maintenir: React + stop.html)
-    function redirectStopRoute() {
-      if ((window.location.hash || '').toLowerCase() === '#stop') {
-        window.location.replace('./stop.html');
-      }
-    }
-    window.addEventListener('hashchange', redirectStopRoute);
-    redirectStopRoute();
-  </script>
-
-  <!-- ✅ Service Worker (bump v=... pour forcer la MAJ) -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker
-          .register('./sw.js?v=v11')
-          .catch(console.error);
-      });
-    }
-  </script>
-
-  <!-- ✅ Bundle React (1 seule fois) -->
-  <script type="module" src="dist/bundle.js?v=v11"></script>
+      <a href="tbm-demo.html" class="block w-full text-center px-4 py-3 rounded-xl bg-[#104861] text-white font-semibold">
+        Ouvrir le module TBM démo
+      </a>
+    </section>
+  </main>
 </body>
 </html>
