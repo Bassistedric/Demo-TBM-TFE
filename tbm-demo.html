@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>TBM Démo TFE</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gray-50">
+  <header class="sticky top-0 z-10 bg-white/90 backdrop-blur border-b">
+    <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between gap-3">
+      <a href="index.html#home" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-2xl border bg-white" aria-label="Retour à l'accueil QHSE">
+        <span aria-hidden="true">← Retour</span>
+      </a>
+      <span class="text-xs rounded-full bg-amber-100 text-amber-900 px-3 py-1 border border-amber-300">Version démo TFE</span>
+    </div>
+  </header>
+
+  <main class="space-y-4 max-w-md mx-auto px-4 py-4">
+    <h1 class="text-2xl font-bold mb-4 px-4 py-2 rounded-xl bg-[#104861] text-[#D9D9D9] text-center">TBM</h1>
+
+    <div class="rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
+      Version de démonstration avec données fictives. Aucune donnée n’est transmise ni enregistrée dans une base externe.
+    </div>
+
+    <section class="bg-white rounded shadow p-4">
+      <label for="dateInput" class="block text-sm font-medium mb-1">Date / heure</label>
+      <input id="dateInput" type="datetime-local" class="border rounded px-2 py-1 w-full">
+      <p id="weekHint" class="text-xs text-gray-500 mt-1"></p>
+    </section>
+
+    <section class="bg-white rounded shadow p-4">
+      <label for="metier" class="block text-sm font-medium mb-1">1. Métier</label>
+      <select id="metier" class="border rounded px-2 py-1 w-full">
+        <option value="">Sélectionnez...</option>
+        <option value="Elec">Elec</option>
+        <option value="HVAC_REF">HVAC-Ref</option>
+      </select>
+    </section>
+
+    <section class="bg-white rounded shadow p-4">
+      <label for="chantierSelect" class="block text-sm font-medium mb-1">2. Chantier</label>
+      <select id="chantierSelect" class="border rounded px-2 py-1 w-full"></select>
+      <input id="chantierManual" type="text" class="border rounded px-2 py-1 w-full mt-1 text-sm" placeholder="Ajouter manuellement">
+    </section>
+
+    <section class="bg-white rounded shadow p-4">
+      <label for="responsableSelect" class="block text-sm font-medium mb-1">3. Responsable (CE/SiSu)</label>
+      <select id="responsableSelect" class="border rounded px-2 py-1 w-full"></select>
+      <div class="flex gap-2 mt-1">
+        <input id="responsableManual" type="text" class="border rounded px-2 py-1 flex-1 text-sm" placeholder="Ajouter manuellement">
+        <button id="responsableManualBtn" type="button" class="px-3 py-1 bg-blue-600 text-white rounded text-sm">Valider</button>
+      </div>
+      <p id="responsableHelper" class="text-sm text-gray-500 mt-1"></p>
+    </section>
+
+    <section class="bg-white rounded shadow p-4">
+      <div class="flex items-center gap-4">
+        <div id="thumbContainer" class="w-64 h-36 bg-gray-200 flex items-center justify-center text-sm text-gray-500 rounded">Vidéo démo</div>
+        <div id="qrcode" class="w-32 h-32 flex items-center justify-center border rounded text-xs text-center text-gray-500 p-2">QR code démo</div>
+      </div>
+      <div class="mt-2 flex gap-2">
+        <button id="playBtn" class="px-3 py-1 bg-blue-600 text-white rounded">4. Lire la vidéo</button>
+        <button id="copyLink" class="px-3 py-1 bg-blue-600 text-white rounded">Copier le lien</button>
+      </div>
+    </section>
+
+    <section class="bg-white rounded shadow p-4">
+      <label class="text-sm font-medium">5. Participants présents</label>
+      <div id="teamContainer" class="flex flex-col gap-1 mt-2 mb-2"></div>
+      <div class="flex gap-2">
+        <input id="manualInput" type="text" class="border rounded px-2 py-1 flex-1" placeholder="Ajouter manuellement" list="manualSuggestions">
+        <button id="manualAddBtn" type="button" class="px-3 py-1 bg-blue-600 text-white rounded">Valider</button>
+      </div>
+      <datalist id="manualSuggestions"></datalist>
+      <div id="manualChips" class="flex flex-wrap gap-2 mt-2"></div>
+      <p id="manualError" class="text-sm text-red-600 mt-1 hidden"></p>
+    </section>
+
+    <section class="bg-white rounded shadow p-4">
+      <button id="sendBtn" class="px-3 py-1 bg-black text-white rounded w-full">6. Envoyer</button>
+      <p id="sendStatus" class="text-sm mt-2"></p>
+    </section>
+  </main>
+
+  <script>
+    const DEMO_DATA = {
+      Elec: {
+        chantiers: [
+          { nom: "Chantier démo LlN - Bâtiment A", responsables: ["Marc D.", "Sophie M."], participants: ["Jean A.", "Lucas B.", "Nadia C.", "Pierre D."] },
+          { nom: "Chantier démo LlN - Extension technique", responsables: ["Thomas R."], participants: ["Olivier E.", "Maya F.", "Hugo G."] }
+        ]
+      },
+      HVAC_REF: {
+        chantiers: [
+          { nom: "Chantier démo JumAl - Chaufferie", responsables: ["Alex B.", "Nicolas S."], participants: ["Karim H.", "Julie I.", "Mehdi J.", "Laura K."] },
+          { nom: "Chantier démo JumAl - Froid industriel", responsables: ["Claire T."], participants: ["Samir L.", "Emma M.", "Noah N."] }
+        ]
+      }
+    };
+
+    const dateInput = document.getElementById('dateInput');
+    const weekHint = document.getElementById('weekHint');
+    const metierInput = document.getElementById('metier');
+    const chantierSelect = document.getElementById('chantierSelect');
+    const chantierManual = document.getElementById('chantierManual');
+    const responsableSelect = document.getElementById('responsableSelect');
+    const responsableManual = document.getElementById('responsableManual');
+    const responsableManualBtn = document.getElementById('responsableManualBtn');
+    const responsableHelper = document.getElementById('responsableHelper');
+    const teamContainer = document.getElementById('teamContainer');
+    const manualInput = document.getElementById('manualInput');
+    const manualAddBtn = document.getElementById('manualAddBtn');
+    const manualChips = document.getElementById('manualChips');
+    const manualSuggestions = document.getElementById('manualSuggestions');
+    const sendBtn = document.getElementById('sendBtn');
+    const sendStatus = document.getElementById('sendStatus');
+    const playBtn = document.getElementById('playBtn');
+    const copyLink = document.getElementById('copyLink');
+
+    let manualMembers = [];
+
+    function isoWeek(dateObj){
+      const d = new Date(Date.UTC(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate()));
+      const dayNum = d.getUTCDay() || 7;
+      d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+      const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+      return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+    }
+
+    function setNow(){
+      const now = new Date();
+      now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+      dateInput.value = now.toISOString().slice(0,16);
+      weekHint.textContent = `Semaine ISO détectée : ${isoWeek(new Date(dateInput.value))}`;
+    }
+
+    function optionList(values){
+      return values.map(v => `<option value="${v}">${v}</option>`).join('');
+    }
+
+    function selectedChantierData(){
+      const metier = metierInput.value;
+      const data = DEMO_DATA[metier];
+      if(!data) return null;
+      return data.chantiers.find(c => c.nom === chantierSelect.value) || data.chantiers[0];
+    }
+
+    function renderMetier(){
+      const data = DEMO_DATA[metierInput.value];
+      chantierSelect.innerHTML = data ? optionList(data.chantiers.map(c => c.nom)) : '';
+      renderChantier();
+    }
+
+    function renderChantier(){
+      const c = selectedChantierData();
+      responsableSelect.innerHTML = c ? optionList(c.responsables) : '';
+      responsableHelper.textContent = '';
+      renderParticipants();
+    }
+
+    function renderParticipants(){
+      const c = selectedChantierData();
+      const participants = c ? c.participants : [];
+      teamContainer.innerHTML = participants.map(p => `
+        <label class="inline-flex items-center gap-2">
+          <input type="checkbox" value="${p}" class="rounded"> ${p}
+        </label>
+      `).join('');
+      manualSuggestions.innerHTML = participants.map(p => `<option value="${p}"></option>`).join('');
+    }
+
+    function addManualMember(){
+      const name = manualInput.value.trim();
+      if(!name) return;
+      if(!manualMembers.includes(name)) manualMembers.push(name);
+      manualInput.value = '';
+      renderManualChips();
+    }
+
+    function renderManualChips(){
+      manualChips.innerHTML = manualMembers.map((m, i) => `
+        <button type="button" data-index="${i}" class="px-2 py-1 rounded-full bg-slate-100 border text-sm">${m} ×</button>
+      `).join('');
+      manualChips.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          manualMembers.splice(Number(btn.dataset.index), 1);
+          renderManualChips();
+        });
+      });
+    }
+
+    function getPayload(){
+      const checked = [...teamContainer.querySelectorAll('input[type="checkbox"]:checked')].map(cb => cb.value);
+      return {
+        datetime: dateInput.value,
+        metier: metierInput.value,
+        chantier: chantierManual.value.trim() || chantierSelect.value,
+        responsable: responsableManual.value.trim() || responsableSelect.value,
+        participants: checked.concat(manualMembers)
+      };
+    }
+
+    function validate(){
+      const p = getPayload();
+      return p.datetime && p.metier && p.chantier && p.responsable && p.participants.length;
+    }
+
+    dateInput.addEventListener('change', () => {
+      if(dateInput.value) weekHint.textContent = `Semaine ISO détectée : ${isoWeek(new Date(dateInput.value))}`;
+    });
+    metierInput.addEventListener('change', renderMetier);
+    chantierSelect.addEventListener('change', renderChantier);
+    responsableManualBtn.addEventListener('click', () => {
+      if(responsableManual.value.trim()) responsableHelper.textContent = 'Responsable manuel validé pour la démo.';
+    });
+    manualAddBtn.addEventListener('click', addManualMember);
+    playBtn.addEventListener('click', () => alert('Simulation : ouverture de la vidéo TBM.'));
+    copyLink.addEventListener('click', async () => {
+      await navigator.clipboard?.writeText('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+      alert('Lien vidéo fictif copié.');
+    });
+    sendBtn.addEventListener('click', () => {
+      if(!validate()) {
+        sendStatus.className = 'text-sm mt-2 text-red-600';
+        sendStatus.textContent = 'Veuillez compléter les champs obligatoires et sélectionner au moins un participant.';
+        return;
+      }
+      console.log('Simulation TBM, aucune transmission :', getPayload());
+      sendStatus.className = 'text-sm mt-2 text-green-700';
+      sendStatus.textContent = 'Simulation terminée. Aucune donnée n’a été transmise ni enregistrée.';
+    });
+
+    setNow();
+  </script>
+</body>
+</html>
