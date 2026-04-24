@@ -33,8 +33,10 @@
       <label for="metier" class="block text-sm font-medium mb-1">1. Métier</label>
       <select id="metier" class="border rounded px-2 py-1 w-full">
         <option value="">Sélectionnez...</option>
-        <option value="Elec">Elec</option>
-        <option value="HVAC_REF">HVAC-Ref</option>
+          <option value="ULIEGE">ULiège</option>
+          <option value="ULB">ULB</option>
+          <option value="UCLOUVAIN">UCLouvain</option>
+          <option value="UMONS">UMons</option>
       </select>
     </section>
 
@@ -76,6 +78,14 @@
       <div id="manualChips" class="flex flex-wrap gap-2 mt-2"></div>
       <p id="manualError" class="text-sm text-red-600 mt-1 hidden"></p>
     </section>
+    
+    <section class="bg-white rounded shadow p-4">
+  <label class="text-sm font-medium">Historique récent</label>
+  <ul class="text-sm text-gray-600 mt-2 space-y-1">
+    <li>Chantier GRBE-204 — présent : Lectrice</li>
+    <li>Chantier conception-eval — présent : Promoteur</li>
+  </ul>
+</section>
 
     <section class="bg-white rounded shadow p-4">
       <button id="sendBtn" class="px-3 py-1 bg-black text-white rounded w-full">6. Envoyer</button>
@@ -87,20 +97,49 @@
     const VIDEO_URL = 'https://youtu.be/RmGtMkCpVsc';
     const VIDEO_ID = 'RmGtMkCpVsc';
 
-    const DEMO_DATA = {
-      Elec: {
-        chantiers: [
-          { nom: "Chantier démo LlN - Bâtiment A", responsables: ["Marc D.", "Sophie M."], participants: ["Jean A.", "Lucas B.", "Nadia C.", "Pierre D."] },
-          { nom: "Chantier démo LlN - Extension technique", responsables: ["Thomas R."], participants: ["Olivier E.", "Maya F.", "Hugo G."] }
-        ]
+const DEMO_DATA = {
+  ULIEGE: {
+    chantiers: [
+      {
+        nom: "Ergo",
+        responsables: ["Cco"],
+        participants: ["Lectrice","Promoteur"]
       },
-      HVAC_REF: {
-        chantiers: [
-          { nom: "Chantier démo JumAl - Chaufferie", responsables: ["Alex B.", "Nicolas S."], participants: ["Karim H.", "Julie I.", "Mehdi J.", "Laura K."] },
-          { nom: "Chantier démo JumAl - Froid industriel", responsables: ["Claire T."], participants: ["Samir L.", "Emma M.", "Noah N."] }
-        ]
+      {
+        nom: "AP",
+        responsables: ["Cco"],
+        participants: ["EmC, LoC,CoD"]
       }
-    };
+    ]
+  },
+  ULB: {
+    chantiers: [
+      {
+        nom: "Ergo",
+        responsables: ["Cco"],
+        participants: ["Lectrice","Promoteur"]
+      }
+    ]
+  },
+  UCLOUVAIN: {
+    chantiers: [
+      {
+        nom: "AP",
+        responsables: ["Cco"],
+        participants: ["Promoteur"]
+      }
+    ]
+  },
+  UMONS: {
+    chantiers: [
+      {
+        nom: "Ergo",
+        responsables: ["Cco"],
+        participants: ["Lectrice","Promoteur"]
+      }
+    ]
+  }
+};
 
     const dateInput = document.getElementById('dateInput');
     const weekHint = document.getElementById('weekHint');
