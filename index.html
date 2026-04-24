@@ -3,26 +3,77 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Démo TBM - TFE</title>
+  <title>QHSE - Démo TFE</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="min-h-screen bg-gray-50 text-slate-900">
-  <main class="max-w-md mx-auto px-4 py-6 space-y-4">
-    <section class="bg-white rounded-2xl shadow p-5 space-y-4">
-      <h1 class="text-2xl font-bold px-4 py-3 rounded-xl bg-[#104861] text-[#D9D9D9] text-center">Démo TBM - TFE</h1>
+  <header class="sticky top-0 z-10 bg-white/90 backdrop-blur border-b">
+    <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between gap-3">
+      <div class="flex items-center gap-2">
+        <img src="qhse-logo.svg" alt="QHSE" class="w-9 h-9 rounded-lg border bg-white" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'inline-flex items-center justify-center w-9 h-9 rounded-lg border font-bold bg-white',innerText:'QHSE'}))">
+        <div>
+          <div class="text-sm font-semibold leading-tight">QHSE Tools</div>
+          <div class="text-xs text-slate-500 leading-tight">Version démo TFE</div>
+        </div>
+      </div>
+      <span class="text-xs rounded-full bg-amber-100 text-amber-900 px-3 py-1 border border-amber-300">Anonymisé</span>
+    </div>
+  </header>
 
+  <main class="max-w-md mx-auto px-4 py-5 space-y-4">
+    <section class="bg-white rounded-2xl shadow p-5 space-y-3">
+      <h1 class="text-2xl font-bold px-4 py-3 rounded-xl bg-[#104861] text-[#D9D9D9] text-center">Applications QHSE</h1>
       <p class="text-sm text-slate-700 leading-6">
-        Cette version de démonstration permet de tester le module TBM avec des données fictives.
-        Aucun nom réel, chantier réel ou enregistrement opérationnel n’est utilisé.
+        Cette page présente les modules développés dans l’application QHSE. Pour l’évaluation académique, le module TBM est proposé dans une version de démonstration avec données fictives.
       </p>
-
       <div class="rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900 leading-5">
-        Version académique anonymisée. Aucune donnée n’est transmise vers Google Sheet ou vers une base externe.
+        Version démo : aucun nom réel ni chantier réel n’est nécessaire pour tester le TBM. Aucune donnée TBM n’est transmise vers Google Sheet ou vers une base externe.
+      </div>
+    </section>
+
+    <section class="grid grid-cols-2 gap-3">
+      <a href="tbm-demo.html" class="bg-white rounded-2xl shadow p-4 border border-slate-200 hover:border-[#104861] active:scale-[0.99] transition">
+        <div class="text-3xl mb-2">🎬</div>
+        <h2 class="font-semibold">TBM</h2>
+        <p class="text-xs text-slate-500 mt-1">Version fictive et testable</p>
+      </a>
+
+      <a href="stop.html" class="bg-white rounded-2xl shadow p-4 border border-slate-200 hover:border-[#104861] active:scale-[0.99] transition">
+        <div class="text-3xl mb-2">✋</div>
+        <h2 class="font-semibold">STOP</h2>
+        <p class="text-xs text-slate-500 mt-1">Signalement sécurité</p>
+      </a>
+
+      <div class="bg-white rounded-2xl shadow p-4 border border-slate-200">
+        <div class="text-3xl mb-2">🧭</div>
+        <h2 class="font-semibold">LMRA</h2>
+        <p class="text-xs text-slate-500 mt-1">Analyse de dernière minute</p>
       </div>
 
-      <a href="tbm-demo.html" class="block w-full text-center px-4 py-3 rounded-xl bg-[#104861] text-white font-semibold">
-        Ouvrir le module TBM démo
-      </a>
+      <div class="bg-white rounded-2xl shadow p-4 border border-slate-200">
+        <div class="text-3xl mb-2">🩹</div>
+        <h2 class="font-semibold">Premiers soins</h2>
+        <p class="text-xs text-slate-500 mt-1">Déclaration et suivi</p>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow p-4 border border-slate-200">
+        <div class="text-3xl mb-2">📊</div>
+        <h2 class="font-semibold">Reporting</h2>
+        <p class="text-xs text-slate-500 mt-1">Suivi des envois TBM</p>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow p-4 border border-slate-200">
+        <div class="text-3xl mb-2">📁</div>
+        <h2 class="font-semibold">Documents</h2>
+        <p class="text-xs text-slate-500 mt-1">Accès aux supports</p>
+      </div>
+    </section>
+
+    <section class="bg-white rounded-2xl shadow p-5 space-y-3 text-center">
+      <h2 class="font-semibold">QR code de la version démo</h2>
+      <p class="text-xs text-slate-500">Lien vers l’accueil académique anonymisé</p>
+      <img class="mx-auto w-44 h-44 rounded-xl border bg-white p-2" alt="QR code vers la version démo TFE" src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=https%3A%2F%2Fbassistedric.github.io%2FDemo-TBM-TFE%2F">
+      <p class="text-xs break-all text-slate-600">https://bassistedric.github.io/Demo-TBM-TFE/</p>
     </section>
   </main>
 </body>
