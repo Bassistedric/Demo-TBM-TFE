@@ -33,10 +33,10 @@
       <label for="metier" class="block text-sm font-medium mb-1">1. Métier</label>
       <select id="metier" class="border rounded px-2 py-1 w-full">
         <option value="">Sélectionnez...</option>
-          <option value="ULIEGE">ULiège</option>
-          <option value="ULB">ULB</option>
-          <option value="UCLOUVAIN">UCLouvain</option>
-          <option value="UMONS">UMons</option>
+        <option value="ULIEGE">ULiège</option>
+        <option value="ULB">ULB</option>
+        <option value="UCLOUVAIN">UCLouvain</option>
+        <option value="UMONS">UMons</option>
       </select>
     </section>
 
@@ -78,68 +78,62 @@
       <div id="manualChips" class="flex flex-wrap gap-2 mt-2"></div>
       <p id="manualError" class="text-sm text-red-600 mt-1 hidden"></p>
     </section>
-    
-    <section class="bg-white rounded shadow p-4">
-  <label class="text-sm font-medium">Historique récent</label>
-  <ul class="text-sm text-gray-600 mt-2 space-y-1">
-    <li>Chantier GRBE-204 — présent : Lectrice</li>
-    <li>Chantier conception-eval — présent : Promoteur</li>
-  </ul>
-</section>
 
     <section class="bg-white rounded shadow p-4">
       <button id="sendBtn" class="px-3 py-1 bg-black text-white rounded w-full">6. Envoyer</button>
       <p id="sendStatus" class="text-sm mt-2"></p>
     </section>
+
+    <section class="bg-white rounded shadow p-4">
+      <h2 class="text-lg font-medium mb-2">Historique</h2>
+      <div class="flex gap-2 mb-2">
+        <button id="exportBtn" type="button" class="px-3 py-1 bg-blue-600 text-white rounded text-sm">Exporter CSV</button>
+        <button id="clearBtn" type="button" class="px-3 py-1 bg-red-600 text-white rounded text-sm">Vider l'historique</button>
+      </div>
+      <table class="w-full text-xs border-collapse">
+        <tbody id="historyTable"></tbody>
+      </table>
+    </section>
   </main>
+
+  <div id="confirmationModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 hidden" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="bg-white rounded-lg shadow-xl max-w-sm w-full p-6 text-center space-y-4">
+      <h2 id="confirmationTitle" class="text-lg font-semibold">Confirmation</h2>
+      <p id="confirmationText" class="text-sm text-gray-700">Voulez-vous envoyer ?</p>
+      <div class="flex justify-center gap-3">
+        <button id="cancelConfirmation" type="button" class="px-4 py-2 bg-red-600 text-white rounded">Annuler</button>
+        <button id="confirmAction" type="button" class="px-4 py-2 bg-green-600 text-white rounded">Envoyer</button>
+      </div>
+    </div>
+  </div>
 
   <script>
     const VIDEO_URL = 'https://youtu.be/RmGtMkCpVsc';
     const VIDEO_ID = 'RmGtMkCpVsc';
 
-const DEMO_DATA = {
-  ULIEGE: {
-    chantiers: [
-      {
-        nom: "Ergo",
-        responsables: ["Cco"],
-        participants: ["Lectrice","Promoteur"]
+    const DEMO_DATA = {
+      ULIEGE: {
+        chantiers: [
+          { nom: 'Ergo', responsables: ['Cco'], participants: ['Lectrice', 'Promoteur'] },
+          { nom: 'AP', responsables: ['Cco'], participants: ['EmC', 'LoC', 'CoD'] }
+        ]
       },
-      {
-        nom: "AP",
-        responsables: ["Cco"],
-        participants: ["EmC, LoC,CoD"]
+      ULB: {
+        chantiers: [
+          { nom: 'Ergo', responsables: ['Cco'], participants: ['Lectrice', 'Promoteur'] }
+        ]
+      },
+      UCLOUVAIN: {
+        chantiers: [
+          { nom: 'AP', responsables: ['Cco'], participants: ['Promoteur'] }
+        ]
+      },
+      UMONS: {
+        chantiers: [
+          { nom: 'Ergo', responsables: ['Cco'], participants: ['Lectrice', 'Promoteur'] }
+        ]
       }
-    ]
-  },
-  ULB: {
-    chantiers: [
-      {
-        nom: "Ergo",
-        responsables: ["Cco"],
-        participants: ["Lectrice","Promoteur"]
-      }
-    ]
-  },
-  UCLOUVAIN: {
-    chantiers: [
-      {
-        nom: "AP",
-        responsables: ["Cco"],
-        participants: ["Promoteur"]
-      }
-    ]
-  },
-  UMONS: {
-    chantiers: [
-      {
-        nom: "Ergo",
-        responsables: ["Cco"],
-        participants: ["Lectrice","Promoteur"]
-      }
-    ]
-  }
-};
+    };
 
     const dateInput = document.getElementById('dateInput');
     const weekHint = document.getElementById('weekHint');
@@ -161,8 +155,21 @@ const DEMO_DATA = {
     const copyLink = document.getElementById('copyLink');
     const thumbContainer = document.getElementById('thumbContainer');
     const qrcode = document.getElementById('qrcode');
+    const exportBtn = document.getElementById('exportBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const historyTable = document.getElementById('historyTable');
+    const confirmationModal = document.getElementById('confirmationModal');
+    const confirmationTitle = document.getElementById('confirmationTitle');
+    const confirmationText = document.getElementById('confirmationText');
+    const cancelConfirmation = document.getElementById('cancelConfirmation');
+    const confirmAction = document.getElementById('confirmAction');
 
     let manualMembers = [];
+    let pendingAction = null;
+    let historyEntries = [
+      { datetime: '2026-04-15T14:44', metier: 'ULiège', chantier: 'GRBE-204', responsable: 'Cco', participants: ['Lectrice'] },
+      { datetime: '2026-04-15T14:44', metier: 'ULiège', chantier: 'conception-eval', responsable: 'Cco', participants: ['Promoteur'] }
+    ];
 
     function isoWeek(dateObj){
       const d = new Date(Date.UTC(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate()));
@@ -243,7 +250,7 @@ const DEMO_DATA = {
       const checked = [...teamContainer.querySelectorAll('input[type="checkbox"]:checked')].map(cb => cb.value);
       return {
         datetime: dateInput.value,
-        metier: metierInput.value,
+        metier: metierInput.options[metierInput.selectedIndex]?.text || metierInput.value,
         chantier: chantierManual.value.trim() || chantierSelect.value,
         responsable: responsableManual.value.trim() || responsableSelect.value,
         participants: checked.concat(manualMembers),
@@ -254,6 +261,48 @@ const DEMO_DATA = {
     function validate(){
       const p = getPayload();
       return p.datetime && p.metier && p.chantier && p.responsable && p.participants.length;
+    }
+
+    function renderHistory(){
+      historyTable.innerHTML = historyEntries.map(e => `
+        <tr>
+          <td class="border px-1 py-1 whitespace-nowrap">${e.datetime}</td>
+          <td class="border px-1 py-1">${e.metier}</td>
+          <td class="border px-1 py-1">${e.chantier}</td>
+          <td class="border px-1 py-1">${e.responsable}</td>
+          <td class="border px-1 py-1">${e.participants.join(', ')}</td>
+        </tr>
+      `).join('');
+    }
+
+    function openConfirmation(type){
+      pendingAction = type;
+      if(type === 'send'){
+        confirmationTitle.textContent = 'Confirmation';
+        confirmationText.textContent = 'Voulez-vous envoyer ce TBM de démonstration ?';
+        confirmAction.textContent = 'Envoyer';
+      } else {
+        confirmationTitle.textContent = 'Vider l’historique';
+        confirmationText.textContent = 'Voulez-vous vider l’historique de démonstration ?';
+        confirmAction.textContent = 'Vider';
+      }
+      confirmationModal.classList.remove('hidden');
+      confirmationModal.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeConfirmation(){
+      confirmationModal.classList.add('hidden');
+      confirmationModal.setAttribute('aria-hidden', 'true');
+      pendingAction = null;
+    }
+
+    function performSend(){
+      const payload = getPayload();
+      console.log('Simulation TBM, aucune transmission :', payload);
+      historyEntries.push(payload);
+      renderHistory();
+      sendStatus.className = 'text-sm mt-2 text-green-700';
+      sendStatus.textContent = 'Simulation terminée. Aucune donnée n’a été transmise ni enregistrée.';
     }
 
     dateInput.addEventListener('change', () => {
@@ -276,13 +325,31 @@ const DEMO_DATA = {
         sendStatus.textContent = 'Veuillez compléter les champs obligatoires et sélectionner au moins un participant.';
         return;
       }
-      console.log('Simulation TBM, aucune transmission :', getPayload());
-      sendStatus.className = 'text-sm mt-2 text-green-700';
-      sendStatus.textContent = 'Simulation terminée. Aucune donnée n’a été transmise ni enregistrée.';
+      openConfirmation('send');
+    });
+    exportBtn.addEventListener('click', () => {
+      sendStatus.className = 'text-sm mt-2 text-slate-600';
+      sendStatus.textContent = 'Export CSV fictif généré pour la démonstration.';
+    });
+    clearBtn.addEventListener('click', () => openConfirmation('clear'));
+    cancelConfirmation.addEventListener('click', closeConfirmation);
+    confirmAction.addEventListener('click', () => {
+      if(pendingAction === 'send') performSend();
+      if(pendingAction === 'clear') {
+        historyEntries = [];
+        renderHistory();
+        sendStatus.className = 'text-sm mt-2 text-slate-600';
+        sendStatus.textContent = 'Historique de démonstration vidé.';
+      }
+      closeConfirmation();
+    });
+    confirmationModal.addEventListener('click', ev => {
+      if(ev.target === confirmationModal) closeConfirmation();
     });
 
     setNow();
     renderVideo();
+    renderHistory();
   </script>
 </body>
 </html>
