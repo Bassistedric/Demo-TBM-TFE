@@ -84,6 +84,9 @@
   </main>
 
   <script>
+    const VIDEO_URL = 'https://youtu.be/RmGtMkCpVsc';
+    const VIDEO_ID = 'RmGtMkCpVsc';
+
     const DEMO_DATA = {
       Elec: {
         chantiers: [
@@ -117,6 +120,8 @@
     const sendStatus = document.getElementById('sendStatus');
     const playBtn = document.getElementById('playBtn');
     const copyLink = document.getElementById('copyLink');
+    const thumbContainer = document.getElementById('thumbContainer');
+    const qrcode = document.getElementById('qrcode');
 
     let manualMembers = [];
 
@@ -133,6 +138,11 @@
       now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
       dateInput.value = now.toISOString().slice(0,16);
       weekHint.textContent = `Semaine ISO détectée : ${isoWeek(new Date(dateInput.value))}`;
+    }
+
+    function renderVideo(){
+      thumbContainer.innerHTML = `<img src="https://img.youtube.com/vi/${VIDEO_ID}/hqdefault.jpg" alt="Miniature vidéo TBM" class="w-64 h-36 object-cover rounded">`;
+      qrcode.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=128x128&data=${encodeURIComponent(VIDEO_URL)}" alt="QR code vidéo TBM" class="w-32 h-32">`;
     }
 
     function optionList(values){
@@ -197,7 +207,8 @@
         metier: metierInput.value,
         chantier: chantierManual.value.trim() || chantierSelect.value,
         responsable: responsableManual.value.trim() || responsableSelect.value,
-        participants: checked.concat(manualMembers)
+        participants: checked.concat(manualMembers),
+        youtubeUrl: VIDEO_URL
       };
     }
 
@@ -215,10 +226,10 @@
       if(responsableManual.value.trim()) responsableHelper.textContent = 'Responsable manuel validé pour la démo.';
     });
     manualAddBtn.addEventListener('click', addManualMember);
-    playBtn.addEventListener('click', () => alert('Simulation : ouverture de la vidéo TBM.'));
+    playBtn.addEventListener('click', () => window.open(VIDEO_URL, '_blank', 'noopener'));
     copyLink.addEventListener('click', async () => {
-      await navigator.clipboard?.writeText('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
-      alert('Lien vidéo fictif copié.');
+      await navigator.clipboard?.writeText(VIDEO_URL);
+      alert('Lien vidéo copié.');
     });
     sendBtn.addEventListener('click', () => {
       if(!validate()) {
@@ -232,6 +243,7 @@
     });
 
     setNow();
+    renderVideo();
   </script>
 </body>
 </html>
