@@ -241,6 +241,7 @@
     let manualMembers = [];
     const normalizedNameMap = new Map();
     let lastVideoUrl = '';
+    const OVERRIDE_TBM_VIDEO_URL = 'https://youtu.be/pCTBIZ_y79s';
     let hasAttemptedSubmit = false;
     function markInvalidField(element, invalid){
       if(!element) return;
@@ -574,6 +575,11 @@
       playBtn.disabled=true;
       copyLinkBtn.disabled=true;
       lastVideoUrl='';
+      if(OVERRIDE_TBM_VIDEO_URL){
+        lastVideoUrl = OVERRIDE_TBM_VIDEO_URL;
+        renderVideo(OVERRIDE_TBM_VIDEO_URL);
+        return;
+      }
       if(!tbmData) return;
 
       const monthName = new Date(dateInput.value).toLocaleString('fr-FR',{month:'long'}).toLowerCase();
